@@ -112,7 +112,7 @@ class DB_Queries:
 class WriteFile():
 
     def writeCSV(self, orderNo, rows):
-        with open(f'{orderNo}.csv', 'w', encoding='utf-8', newline='') as f:
+        with open(f'../files/CSV/{orderNo}.csv', 'w', encoding='utf-8', newline='') as f:
             wr = csv.writer(f)
             columnNames = list(rows[0].keys())
 
@@ -128,9 +128,8 @@ class WriteFile():
                     order[k] = float(v)
 
         newDict = dict(orderNo=rows)
-        print(newDict)
 
-        with open(f'{orderNo}.json', 'w', encoding='utf-8') as f:
+        with open(f'../files/JSON/{orderNo}.json', 'w', encoding='utf-8') as f:
             json.dump(newDict, f, indent=4, ensure_ascii=False)
 
     def writeXML(self, orderNo, rows):
@@ -140,7 +139,6 @@ class WriteFile():
                     order[k] = float(v)
 
         newDict = dict(orderNo=rows)
-        print(newDict)
 
         tableName = list(newDict.keys())[0]
         tableRows = list(newDict.values())[0]
@@ -160,4 +158,4 @@ class WriteFile():
                 else:
                     rowElement.attrib[columnName] = row[columnName]
 
-        ET.ElementTree(rootElement).write(f'{orderNo}.xml', encoding='utf-8', xml_declaration=True)
+        ET.ElementTree(rootElement).write(f'../files/XML/{orderNo}.xml', encoding='utf-8', xml_declaration=True)
