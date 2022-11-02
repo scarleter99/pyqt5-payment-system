@@ -101,8 +101,6 @@ class ShowOrderDetailWindow(QWidget):
         self.orderDetailTable.setRowCount(len(self.orderDetails))
 
         if len(self.orderDetails) > 0:
-            self.orderDetails.sort(key=lambda x: x['orderLineNo'])
-
             for rowIDX, value in enumerate(self.orderDetails):
                 for columnIDX, (k, v) in enumerate(value.items()):
                     if v == None:

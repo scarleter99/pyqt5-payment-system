@@ -9,8 +9,8 @@ class DB_Utils:
         conn = pymysql.connect(host='localhost', user='guest', password='bemyguest', db=db, charset='utf8')
 
         try:
-            with conn.cursor(pymysql.cursors.DictCursor) as cursor:     # dictionary based cursor
-                cursor.execute(sql, params)                             # dynamic SQL
+            with conn.cursor(pymysql.cursors.DictCursor) as cursor:
+                cursor.execute(sql, params)
                 rows = cursor.fetchall()
                 return rows
         except Exception as e:
@@ -39,8 +39,15 @@ class DB_Utils:
 class DB_Queries:
 
     # 검색문을 각각 하나의 메소드로 정의
-    def selectAllCustomer(self):
-        sql = "SELECT customerId, name, country, city FROM customers"
+    def selectAllName(self):
+        sql = "SELECT DISTINCT name FROM customers ORDER BY name"
+        params = ()
+
+        util = DB_Utils()
+        rows = util.queryExecutor(db="classicmodels", sql=sql, params=params)
+        return rows
+    def selectAllCountry(self):
+        sql = "SELECT DISTINCT country FROM customers ORDER BY country"
         params = ()
 
         util = DB_Utils()
@@ -48,7 +55,7 @@ class DB_Queries:
         return rows
 
     def selectAllCity(self):
-        sql = "SELECT city FROM customers"
+        sql = "SELECT DISTINCT city FROM customers ORDER BY city"
         params = ()
 
         util = DB_Utils()
@@ -56,7 +63,7 @@ class DB_Queries:
         return rows
 
     def selectCityByCountry(self, country):
-        sql = "SELECT city FROM customers WHERE country = %s"
+        sql = "SELECT DISTINCT city FROM customers WHERE country = %s ORDER BY city"
         params = (country)
 
         util = DB_Utils()
@@ -65,7 +72,7 @@ class DB_Queries:
 
     def selectAllOrder(self):
         sql = "SELECT orderNo, orderDate, requiredDate, shippedDate, status, name AS customer, comments" \
-              " FROM customers JOIN orders USING(customerId)"
+              " FROM customers JOIN orders USING(customerId) ORDER BY orderNo"
         params = ()
 
         util = DB_Utils()
@@ -74,7 +81,7 @@ class DB_Queries:
 
     def selectOrderByName(self, name):
         sql = "SELECT orderNo, orderDate, requiredDate, shippedDate, status, name, comments" \
-              " FROM customers JOIN orders USING(customerId) WHERE name = %s"
+              " FROM customers JOIN orders USING(customerId) WHERE name = %s ORDER BY orderNo"
         params = (name)
 
         util = DB_Utils()
@@ -83,7 +90,7 @@ class DB_Queries:
 
     def selectOrderByCountry(self, country):
         sql = "SELECT orderNo, orderDate, requiredDate, shippedDate, status, name, comments" \
-              " FROM customers JOIN orders USING(customerId) WHERE country = %s"
+              " FROM customers JOIN orders USING(customerId) WHERE country = %s ORDER BY orderNo"
         params = (country)
 
         util = DB_Utils()
@@ -92,7 +99,7 @@ class DB_Queries:
 
     def selectOrderByCity(self, city):
         sql = "SELECT orderNo, orderDate, requiredDate, shippedDate, status, name, comments" \
-              " FROM customers JOIN orders USING(customerId) WHERE city = %s"
+              " FROM customers JOIN orders USING(customerId) WHERE city = %s ORDER BY orderNo"
         params = (city)
 
         util = DB_Utils()
@@ -101,7 +108,7 @@ class DB_Queries:
 
     def selectOrderDetailsByOrderNo(self, orderNo):
         sql = "SELECT orderLineNo, productCode, name, quantity, priceEach, quantity * priceEach AS 상품주문액" \
-              " FROM orderDetails JOIN products USING(productCode) WHERE orderNo = %s"
+              " FROM orderDetails JOIN products USING(productCode) WHERE orderNo = %s ORDER BY orderLineNo"
         params = (orderNo)
 
         util = DB_Utils()

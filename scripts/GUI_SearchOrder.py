@@ -26,7 +26,7 @@ class SearchOrderWindow(QWidget):
         self.countryLbl = QLabel("국가:")
         self.cityLbl = QLabel("도시:")
         self.paymentNumLbl1 = QLabel("검색된 주문의 개수:")
-        self.paymentNumLbl2 = QLabel("0") # !! 설정해야함
+        self.paymentNumLbl2 = QLabel("0")
         self.paymentNumLbl2.setText(str(len(self.orders)))
 
         self.nameComboBox = QComboBox()
@@ -35,28 +35,26 @@ class SearchOrderWindow(QWidget):
         self.countryComboBox.activated[str].connect(self.countryComboBox_Activated)
         self.cityComboBox = QComboBox()
         self.cityComboBox.activated[str].connect(self.cityComboBox_Activated)
-        customers = self.query.selectAllCustomer()
-        self.customerList = [['ALL'], ['ALL'], ['ALL']]
 
-        for customer in customers:
-            for k, v in customer.items():
-                if k == 'name':
-                    self.customerList[0].append(v)
-                elif k == 'country':
-                    self.customerList[1].append(v)
-                elif k == 'city':
-                    self.customerList[2].append(v)
+        self.nameComboBox.addItem('ALL')
+        self.countryComboBox.addItem('ALL')
+        self.cityComboBox.addItem('ALL')
 
-        for i in range(3):
-            self.customerList[i] = list(set(self.customerList[i]))
-            self.customerList[i].sort()
-            for j in self.customerList[i]:
-                if i == 0:
-                    self.nameComboBox.addItem(j)
-                if i == 1:
-                    self.countryComboBox.addItem(j)
-                if i == 2:
-                    self.cityComboBox.addItem(j)
+        self.names = self.query.selectAllName()
+        self.countries = self.query.selectAllCountry()
+        self.citys = self.query.selectAllCity()
+
+        for name in self.names:
+            for k, v in name.items():
+                self.nameComboBox.addItem(v)
+
+        for country in self.countries:
+            for k, v in country.items():
+                self.countryComboBox.addItem(v)
+
+        for city in self.citys:
+            for k, v in city.items():
+                self.cityComboBox.addItem(v)
 
         self.searchButton = QPushButton("검색")
         self.searchButton.clicked.connect(self.searchButton_Clicked)
@@ -107,17 +105,14 @@ class SearchOrderWindow(QWidget):
         else:
             citys = self.query.selectCityByCountry(self.comboBoxValue)
 
-        self.cityList = []
-
-        for city in citys:
-            self.cityList.append(city['city'])
-
-        self.cityList = list(set(self.cityList))
-        self.cityList.sort()
         self.cityComboBox.clear()
 
-        for i in self.cityList:
-            self.cityComboBox.addItem(i)
+        print(citys)
+        print(self.comboBoxValue)
+
+        for city in citys:
+            for k, v in city.items():
+                self.cityComboBox.addItem(v)
 
     def cityComboBox_Activated(self, text):
         self.comboBoxValue = text
@@ -137,6 +132,26 @@ class SearchOrderWindow(QWidget):
         self.paymentNumLbl2.setText(str(len(self.orders)))
 
     def resetButton_Clicked(self):
+        self.nameComboBox.clear()
+        self.countryComboBox.clear()
+        self.cityComboBox.clear()
+
+        self.nameComboBox.addItem('ALL')
+        self.countryComboBox.addItem('ALL')
+        self.cityComboBox.addItem('ALL')
+
+        for name in self.names:
+            for k, v in name.items():
+                self.nameComboBox.addItem(v)
+
+        for country in self.countries:
+            for k, v in country.items():
+                self.countryComboBox.addItem(v)
+
+        for city in self.citys:
+            for k, v in city.items():
+                self.cityComboBox.addItem(v)
+
         self.lastClicked = 'name'
         self.comboBoxValue = 'ALL'
         self.searchButton_Clicked()
@@ -150,8 +165,6 @@ class SearchOrderWindow(QWidget):
         self.orderTable.setRowCount(len(self.orders))
 
         if len(self.orders) > 0:
-            self.orders.sort(key=lambda x: x['orderNo'])
-
             for rowIDX, value in enumerate(self.orders):
                 for columnIDX, (k, v) in enumerate(value.items()):
                     if v == None:
